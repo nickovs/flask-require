@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "flask-require"
+authors = [
+  { name="Nicko van Someren", email="nicko@nicko.org" },
+]
+dynamic = ["version"]
+
+description = "Easier decorators for Flask view access control"
+readme = "README.rst"
+requires-python = ">=3.7"
+dependencies = ['flask']
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: MacOS",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: Windows",
+]
+
+[tool.setuptools.dynamic]
+version = {attr = "flask_require.__version__"}
+
+[project.urls]
+"Homepage" = "https://github.com/nickovs/flask-require"
+"Bug Tracker" = "https://github.com/nickovs/flask-require/issues"

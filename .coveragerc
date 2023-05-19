@@ -1,0 +1,11 @@
+[run]
+omit =
+    ./venv/*
+    ./docs/*
+    ./test/*
+
+[report]
+omit =
+    ./venv/*
+    ./docs/*
+    ./test/*

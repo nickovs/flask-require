@@ -1,0 +1,20 @@
+# Editor backup files
+*~
+
+# IDE and test environment
+.idea
+venv
+
+# Build and install files
+/src/*.egg-info/
+/build/
+/dist/
+__pycache__
+/docs/_build/
+
+# Test caches
+.tox
+.pytest_cache
+
+# macOS metadata
+.DS_Store
