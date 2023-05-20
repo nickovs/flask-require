@@ -10,6 +10,10 @@ The :code:`flask-require` module aims to make it quicker and easier to implement
 control to views and API endpoints, while at the same time reducing the amount of typing and
 "boilerplate" code needed to carry out common tasks.
 
+Full documentation and a tutorial can be found on
+`ReadTheDocs <https://flask-require.readthedocs.io/en/latest/index.html>`_.
+
+
 Examples
 --------
 
@@ -45,3 +49,4 @@ To install the latest development version directly from GitHub you can use:
 .. code-block:: sh
 
     pip install https://github.com/nickovs/flask-require.git@master
+

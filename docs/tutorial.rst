@@ -173,7 +173,7 @@ are looked up in the request context rather than the session context.
     is destroyed when the request processing finishes. For :class:`.ContextRequire`
     to be useful some code needs to have run before the decorator is executed.
     Fortunately the test functions called by :class:`.Require` and its subclasses
-    can have side-effects that modify the request context :py:attr:`flask.g`.
+    can have side effects that modify the request context :py:attr:`flask.g`.
     This allows you to write tests that put data into :py:attr:`flask.g` and
     then have later decorators that check values in that context.
 
@@ -292,7 +292,10 @@ fail will be used.
     executed.
 
 As a convenience the boolean :code:`|` (or) and :code:`&` (and) operators can be used
-to combine requirements if you don't want to provide a new target or message.
+to combine requirements if you don't want to provide a new target or message. Note that
+although these are acting as boolean rather than bitwise operators, you need to use the
+single :code:`|` and :code:`&` rather than the double  :code:`||` and :code:`&&`, since
+those operators can not be overridden by a class.
 
 .. code-block:: python
 
@@ -326,7 +329,42 @@ to combine requirements if you don't want to provide a new target or message.
         ...
 
 
-Requirements with side-effects
+Requirements with side effects
 ------------------------------
 
-Executed in order.
+Many of the use cases for :code:`flask-require` involve making decorators that have side effects.
+For instance, in the example above, the :code:`valid_user` not only ensures that the :code:`user_id`
+value is valid but it saves the user information into the request context so that later code does
+not need to look up the same data again.
+
+There are many places where :code:`flask-require` can take a user-defined function, and any of these
+functions might have side effects. If some of these functions also want to rely on the side effects
+of other functions then it's important to understand the order in which they get called, and sometimes
+if they are going to get called at all.
+
+The short answer to the question of in what order are they called is: "the obvious order". Python
+generaly progresses from top to bottom through the lines, from left to right within a line and the
+start to end in lists, and so does :code:`flask-require`. If you have multiple requirement decorators
+on a single function then they will be executed top to bottom. This means that if one decorator is
+going to rely on the side effect of another then it needs to come later, just like in a regualr Python
+program. It also means that if an earlier requirement fails then later requirements won't be called;
+if those later ones could have side effects then they won't be triggered. In general this is fine if
+the side effect only modifies the request context but if you tried to modify the session state then
+this might cause unexpected behaviour.
+
+The other place where you might have multiple requirement test functions with side effects is when
+you combine a set of requirements with boolean operators or directly construct :class:`.AnyRequire`
+or :class:`.AllRequire` instances. The case for :class:`.AllRequire` is much the same as with
+having multiple decorators: processing proceeds from the start of the list to the end of the list
+(or from left to right, if the :code:`&` operator was used) and if an earlier test fails then the
+later tests will not be tried. With :class:`.AnyRequire` (or the :code:`|` operator) it is the
+opposite: it keeps going as long as the tests fail but if any test passes then later tests will
+not be tried. Note that if you combine requirements with both :code:`&` and :code:`|` then they
+are grouped with the normal operator precidence: :code:`&` binds more tightly than :code:`|`. This
+means that if you have requirements :code:`a`, :code:`b` and :code:`c` and you build the compound
+requirement :code:`a & b | c` then should the test for :code:`a` fail, the test for :code:`b` will
+not be executed but the test for :code:`c` will be.
+
+The best way to avoid confusion when write tests with side effects is to (a) only modify the
+request context or other request-specific state and (b) only have leave side effects if your
+test passes. If you stick to those rules then in most cases you will be safe.
