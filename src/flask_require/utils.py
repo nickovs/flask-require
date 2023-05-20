@@ -4,6 +4,10 @@
 # SPDX: MIT
 # See LICENSE.md for the full license text.
 
+# pylint: disable=invalid-name
+
+"""General utility functions"""
+
 from flask import request
 
 
@@ -14,4 +18,3 @@ def up():
     if last_slash >= 0:
         current_path = current_path[:last_slash+1]
     return request.root_path + current_path
-

@@ -4,6 +4,10 @@
 # SPDX: MIT
 # See LICENSE.md for the full license text.
 
+# pylint: disable=too-few-public-methods
+
+"""A set of classes that encapsulate quick checks for values"""
+
 import re
 import time
 

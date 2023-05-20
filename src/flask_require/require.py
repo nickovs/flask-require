@@ -4,6 +4,10 @@
 # SPDX: MIT
 # See LICENSE.md for the full license text.
 
+# pylint: disable=invalid-name,no-else-return,too-few-public-methods
+
+"""The core Require class and its subclasses"""
+
 import re
 from functools import wraps
 from inspect import signature
@@ -123,6 +127,7 @@ class Require(BaseRequire):
 
 
 class KeyCheckRequire(BaseRequire):
+    """A parent class for Value, Session and Context requirements"""
     def __init__(self, needs, redirect_endpoint, flash_msg=None, msg_category='warning'):
         """
         :param needs: Either a single item or a list of items, each of which may either be
@@ -142,7 +147,7 @@ class KeyCheckRequire(BaseRequire):
             if isinstance(n, tuple):
                 if len(n) != 2:
                     raise ValueError("Requirement tuples must be length 2")
-                key, value = n
+                key, _ = n
                 if not isinstance(key, str):
                     raise ValueError("Session keys must be strings")
             elif not isinstance(n, str):
@@ -246,12 +251,17 @@ class CompoundRequire(BaseRequire):
         for r in sub_reqs:
             self._check_args |= r._check_args
 
+    def _perform_checks(self, handler, args, kwargs):  # pragma: no cover
+        # Defined as abstract in parent, so we have to implement it!
+        raise NotImplementedError
+
 
 class AllRequire(CompoundRequire):
     """Succeeds only if all requirements are met.
     Tests are applied in order and the redirect and flash message are for the first to fail.
     """
     def _perform_checks(self, handler, args, kwargs):
+        # pylint: disable=protected-access
         for r in self._sub_reqs:
             ok, message, catagory, target = r._perform_checks(handler, args, kwargs)
             if not ok:
@@ -278,6 +288,7 @@ class AnyRequire(CompoundRequire):
     If none are met the redirect and lash message from the first is used.
     """
     def _perform_checks(self, handler, args, kwargs):
+        # pylint: disable=protected-access
         first_fail = None
         for r in self._sub_reqs:
             result = r._perform_checks(handler, args, kwargs)
